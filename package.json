@@ -1,0 +1,25 @@
+{
+  "name": "import-sort-style-vmv",
+  "version": "1.0.0",
+  "description": "An import-sort style",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "scripts": {
+    "prepublishOnly": "tsc -b .",
+    "build": "tsc -b .",
+    "build:watch": "tsc -b . -w"
+  },
+  "author": "Valentin Voilean <vali.voilean@gmail.com> (https://github.com/valentinvoilean)",
+  "repository": "valentinvoilean/import-sort-style-vmv",
+  "license": "ISC",
+  "files": [
+    "lib"
+  ],
+  "devDependencies": {
+    "@types/node": "^13.1.2",
+    "import-sort-parser": "^6.0.0",
+    "import-sort-style": "^6.0.0",
+    "ts-node": "^8.0.2",
+    "typescript": "^3.2.4"
+  }
+}
