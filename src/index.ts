@@ -26,6 +26,7 @@ export default function(styleApi: IStyleAPI): IStyleItem[] {
   const isReactModule = imported => Boolean(imported.moduleName.match(/^(react|prop-types|redux)/));
   const isStylesModule = imported => Boolean(imported.moduleName.match(/\.(s?css|less)$/));
   const isTypesModule = imported => Boolean(imported.moduleName.match(/types$/));
+  const isUtilsModule = imported => Boolean(imported.moduleName.match(/utils$/));
 
   const reactComparator = (name1, name2) => {
     let i1 = fixedOrder.indexOf(name1);
@@ -78,7 +79,7 @@ export default function(styleApi: IStyleAPI): IStyleItem[] {
     { separator: true },
     // import Component from "components/Component.jsx";
     {
-      match: isAbsoluteModule,
+      match: and(isAbsoluteModule, not(isUtilsModule)),
       sort: moduleName(naturally),
       sortNamedMembers: alias(unicode),
     },
@@ -87,7 +88,21 @@ export default function(styleApi: IStyleAPI): IStyleItem[] {
     // import … from "./foo";
     // import … from "../foo";
     {
-      match: and(isRelativeModule, not(isStylesModule), not(isTypesModule)),
+      match: and(isRelativeModule, not(isStylesModule), not(isUtilsModule), not(isTypesModule)),
+      sort: [dotSegmentCount, moduleName(naturally)],
+      sortNamedMembers: alias(unicode),
+    },
+    { separator: true },
+
+    // import utils from 'utils'
+    {
+      match: and(isUtilsModule, isAbsoluteModule),
+      sort: moduleName(naturally),
+      sortNamedMembers: alias(unicode),
+    },
+    // import utils from './utils'
+    {
+      match: and(isUtilsModule, isRelativeModule),
       sort: [dotSegmentCount, moduleName(naturally)],
       sortNamedMembers: alias(unicode),
     },
