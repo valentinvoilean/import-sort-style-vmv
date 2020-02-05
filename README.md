@@ -47,9 +47,15 @@ import bbbb from "../bbbb";
 import aaaaa from "./aaaaa";
 import bbbbb from "./bbbbb";
 
-// Util modules sorted by "relative depth" and then by name
+// Util modules sorted by absolute & relative paths and then by name
 import utils from "utils";
 import utils from "./utils";
+import utils from "./utils/abc";
+
+// Constant modules sorted by absolute & relative paths and then by name
+import { ABC } from "constants";
+import { ABC } from "./constants";
+import { ABC } from "./constants/abc";
 
 // First-party styles modules sorted by "relative depth" and then by name
 import styles from "./Component.scss";

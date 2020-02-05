@@ -26,8 +26,15 @@ export default function(styleApi: IStyleAPI): IStyleItem[] {
   const isReactModule = imported => Boolean(imported.moduleName.match(/^(react|prop-types|redux)/));
   const isStylesModule = imported => Boolean(imported.moduleName.match(/\.(s?css|less)$/));
   const isTypesModule = imported => Boolean(imported.moduleName.match(/types$/));
-  const isConstantsModule = imported => Boolean(imported.moduleName.match(/constants$/));
-  const isUtilsModule = imported => Boolean(imported.moduleName.match(/utils$/));
+  const isConstantsModule = imported =>
+    Boolean(imported.moduleName.match(/(constants\/|constants$)/));
+  const isUtilsModule = imported => Boolean(imported.moduleName.match(/(utils\/|utils$)/));
+  const isNotSpecial = and(
+    not(isStylesModule),
+    not(isConstantsModule),
+    not(isTypesModule),
+    not(isUtilsModule)
+  );
 
   const reactComparator = (name1, name2) => {
     let i1 = fixedOrder.indexOf(name1);
@@ -46,13 +53,7 @@ export default function(styleApi: IStyleAPI): IStyleItem[] {
 
     // import "./foo"
     {
-      match: and(
-        hasNoMember,
-        isRelativeModule,
-        not(isStylesModule),
-        not(isConstantsModule),
-        not(isTypesModule)
-      ),
+      match: and(hasNoMember, isRelativeModule, isNotSpecial),
     },
     { separator: true },
 
@@ -79,14 +80,14 @@ export default function(styleApi: IStyleAPI): IStyleItem[] {
     { separator: true },
     // Scoped modules (@-prefixed), sorted by module name.
     {
-      match: isScopedModule,
+      match: and(isScopedModule, isNotSpecial),
       sort: moduleName(naturally),
       sortNamedMembers: alias(unicode),
     },
     { separator: true },
     // import Component from "components/Component.jsx";
     {
-      match: and(isAbsoluteModule, not(isUtilsModule)),
+      match: and(isAbsoluteModule, isNotSpecial),
       sort: moduleName(naturally),
       sortNamedMembers: alias(unicode),
     },
@@ -95,13 +96,7 @@ export default function(styleApi: IStyleAPI): IStyleItem[] {
     // import … from "./foo";
     // import … from "../foo";
     {
-      match: and(
-        isRelativeModule,
-        not(isStylesModule),
-        not(isUtilsModule),
-        not(isConstantsModule),
-        not(isTypesModule)
-      ),
+      match: and(isRelativeModule, isNotSpecial),
       sort: [dotSegmentCount, moduleName(naturally)],
       sortNamedMembers: alias(unicode),
     },
