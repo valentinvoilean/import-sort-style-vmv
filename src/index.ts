@@ -26,6 +26,7 @@ export default function(styleApi: IStyleAPI): IStyleItem[] {
   const isReactModule = imported => Boolean(imported.moduleName.match(/^(react|prop-types|redux)/));
   const isStylesModule = imported => Boolean(imported.moduleName.match(/\.(s?css|less)$/));
   const isTypesModule = imported => Boolean(imported.moduleName.match(/types$/));
+  const isConstantsModule = imported => Boolean(imported.moduleName.match(/constants$/));
   const isUtilsModule = imported => Boolean(imported.moduleName.match(/utils$/));
 
   const reactComparator = (name1, name2) => {
@@ -44,7 +45,15 @@ export default function(styleApi: IStyleAPI): IStyleItem[] {
     { separator: true },
 
     // import "./foo"
-    { match: and(hasNoMember, isRelativeModule, not(isStylesModule), not(isTypesModule)) },
+    {
+      match: and(
+        hasNoMember,
+        isRelativeModule,
+        not(isStylesModule),
+        not(isConstantsModule),
+        not(isTypesModule)
+      ),
+    },
     { separator: true },
 
     // import React from "react";
@@ -53,7 +62,6 @@ export default function(styleApi: IStyleAPI): IStyleItem[] {
       sort: moduleName(reactComparator),
       sortNamedMembers: alias(unicode),
     },
-    { separator: true },
 
     // import … from "fs";
     {
@@ -61,7 +69,6 @@ export default function(styleApi: IStyleAPI): IStyleItem[] {
       sort: moduleName(naturally),
       sortNamedMembers: alias(unicode),
     },
-    { separator: true },
 
     // import uniq from 'lodash/uniq';
     {
@@ -88,7 +95,13 @@ export default function(styleApi: IStyleAPI): IStyleItem[] {
     // import … from "./foo";
     // import … from "../foo";
     {
-      match: and(isRelativeModule, not(isStylesModule), not(isUtilsModule), not(isTypesModule)),
+      match: and(
+        isRelativeModule,
+        not(isStylesModule),
+        not(isUtilsModule),
+        not(isConstantsModule),
+        not(isTypesModule)
+      ),
       sort: [dotSegmentCount, moduleName(naturally)],
       sortNamedMembers: alias(unicode),
     },
@@ -103,6 +116,20 @@ export default function(styleApi: IStyleAPI): IStyleItem[] {
     // import utils from './utils'
     {
       match: and(isUtilsModule, isRelativeModule),
+      sort: [dotSegmentCount, moduleName(naturally)],
+      sortNamedMembers: alias(unicode),
+    },
+    { separator: true },
+
+    // import { ABC } from 'constants'
+    {
+      match: and(isConstantsModule, isAbsoluteModule),
+      sort: moduleName(naturally),
+      sortNamedMembers: alias(unicode),
+    },
+    // import { ABC } from './constants'
+    {
+      match: and(isConstantsModule, isRelativeModule),
       sort: [dotSegmentCount, moduleName(naturally)],
       sortNamedMembers: alias(unicode),
     },
