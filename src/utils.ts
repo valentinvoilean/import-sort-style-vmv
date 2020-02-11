@@ -1,6 +1,7 @@
 import { readdirSync } from 'fs';
+import { join } from 'path';
 
-export  const isFromNodeModules = imported => readdirSync('./node_modules').indexOf(imported.moduleName.split('/')[0]) !== -1;
+export  const isFromNodeModules = imported => readdirSync(join(__dirname, '../../')).indexOf(imported.moduleName.split('/')[0]) !== -1;
 
 export const isReactModule = imported => Boolean(imported.moduleName.match(/^(react|prop-types|redux)/));
 
