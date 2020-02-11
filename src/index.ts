@@ -1,50 +1,19 @@
-import { readdirSync } from 'fs';
-
 import { IStyleAPI, IStyleItem } from 'import-sort-style';
 
-const fixedOrder = ['react', 'prop-types'];
+import {
+  isFromNodeModules,
+  isReactModule,
+  isStylesModule,
+  isTypesModule,
+  isConstantsModule,
+  isUtilsModule,
+  isNotSpecial,
+  reactComparator,
+} from './utils';
 
 export default function(styleApi: IStyleAPI): IStyleItem[] {
-  const {
-    alias,
-    dotSegmentCount,
-    isScopedModule,
-    isNodeModule,
-    moduleName,
-    naturally,
-    unicode,
-    hasNoMember,
-    and,
-    not,
-    isAbsoluteModule,
-    isRelativeModule,
-  } = styleApi;
-
-  const modules = readdirSync('./node_modules');
-
-  const isFromNodeModules = imported => modules.indexOf(imported.moduleName.split('/')[0]) !== -1;
-  const isReactModule = imported => Boolean(imported.moduleName.match(/^(react|prop-types|redux)/));
-  const isStylesModule = imported => Boolean(imported.moduleName.match(/\.(s?css|less)$/));
-  const isTypesModule = imported => Boolean(imported.moduleName.match(/types$/));
-  const isConstantsModule = imported =>
-    Boolean(imported.moduleName.match(/(constants\/|constants$)/));
-  const isUtilsModule = imported => Boolean(imported.moduleName.match(/(utils\/|utils$)/));
-  const isNotSpecial = and(
-    not(isStylesModule),
-    not(isConstantsModule),
-    not(isTypesModule),
-    not(isUtilsModule)
-  );
-
-  const reactComparator = (name1, name2) => {
-    let i1 = fixedOrder.indexOf(name1);
-    let i2 = fixedOrder.indexOf(name2);
-
-    i1 = i1 === -1 ? Number.MAX_SAFE_INTEGER : i1;
-    i2 = i2 === -1 ? Number.MAX_SAFE_INTEGER : i2;
-
-    return i1 === i2 ? naturally(name1, name2) : i1 - i2;
-  };
+  const { alias, dotSegmentCount, isScopedModule, isNodeModule, moduleName, naturally } = styleApi;
+  const { unicode, hasNoMember, and, isAbsoluteModule, isRelativeModule } = styleApi;
 
   return [
     // import "foo"
@@ -60,7 +29,7 @@ export default function(styleApi: IStyleAPI): IStyleItem[] {
     // import React from "react";
     {
       match: isReactModule,
-      sort: moduleName(reactComparator),
+      sort: moduleName(reactComparator(naturally)),
       sortNamedMembers: alias(unicode),
     },
 

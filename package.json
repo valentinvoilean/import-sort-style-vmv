@@ -1,6 +1,6 @@
 {
   "name": "import-sort-style-vmv",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "An import-sort style",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
